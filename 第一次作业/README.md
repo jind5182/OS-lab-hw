@@ -13,50 +13,5 @@
 
 * 利用LXC Python API编写程序，要求执行该程序会先创建并启动一个Debian系统容器，然后该程序会在容器根目录创建一个名为 Hello-Container的文件，并在文件中写入姓名和学号，最后该程序会停止当前容器。
 
-```
-import lxc
-import sys
-
-# Setup the container object
-c = lxc.Container("test5")
-if c.defined:
-    print("Container already exists", file=sys.stderr)
-    sys.exit(1)
-else:
-    print("success")
-
-# Create the container rootfs
-if not c.create(template="debian"):
-    print("Failed to create the container rootfs", file=sys.stderr)
-    sys.exit(1)
-else:
-    print("create succeed")
-
-# Start the container
-if not c.start():
-    print("Failed to start the container", file=sys.stderr)
-    sys.exit(1)
-else:
-    print("start succeed")
-
-if c.attach_wait(lxc.attach_run_command, ['bash', '-c', 'echo "jindian\n1500012815" > Hello-Container']):
-    print("Failed to write to the container", file=sys.stderr)
-    sys.exit(1)
-else:
-    print("write succeed")
-
-# Stop the container
-if not c.shutdown(10):
-    print("Failed to cleanly shutdown the container, forcing.")
-    if not c.stop():
-        print("Failed to kill the container", file=sys.stderr)
-        sys.exit(1)
-    else:
-        print("stop succeed")
-
-# Destroy the container
-if not c.destroy():
-    print("Failed to destroy the container.", file=sys.stderr)
-    sys.exit(1)
-```
+	[代码在这里](Hello-Container.py)
 
