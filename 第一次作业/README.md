@@ -1,0 +1,19 @@
+## 第一次作业
+* 了解虚拟机和容器技术，用自己的话简单叙述、总结并对比； 
+
+	__虚拟机技术：__ 虚拟机是一个模拟真实计算机的虚拟系统，它包括一台真正计算机除了硬件设备以外的部分：操作系统、库以及其上的应用。虚拟机利用软件模拟特定的硬件系统，依赖于hypervisor，生成操作系统的虚拟镜像，分配指定的资源，运行在一个独立的隔离环境。包含了虚拟硬件、内核以及用户空间，使得能够在同一个机器上运行多种操作系统。
+	
+	<img src="images/VM.png" weight="300" height="400">
+	   
+	__容器技术：__ 容器只包含应用以及所依赖的库和框架。容器位于硬件和操作系统的上方，直接搭载在主机操作系统上，与其直接通信，每个容器共享主机操作系统内核,在其上通过namespace等技术，将整个运行时环境（包括全部所需文件）一起打包隔离。
+	
+	<img src="images/Container.png" weight="150" height="300"> 
+	
+	__对比：__ 虚拟机包含了操作系统和应用以及依赖的环境，容器只包含了应用以及依赖的环境；虚拟机依赖hypervisor，运行在hypervisor上，容器直接运行在宿主机内核上，需要容器引擎，如Docker Engine；虚拟机占有磁盘空间大，为GB量级，容器小，为MB量级；虚拟机启动速度满，分钟级，容器启动速度快，秒级；容器并发行更好，可以同时运行上百个，虚拟机最多几十个；性能上，虚拟机逊于宿主机，容器接近宿主机本地进程；虚拟机资源利用率较低，容器较高；容器相对虚拟机更轻量级、更快，管理和开发测试更简单；容器更易迁移。
+
+* 利用LXC Python API编写程序，要求执行该程序会先创建并启动一个Debian系统容器，然后该程序会在容器根目录创建一个名为 Hello-Container的文件，并在文件中写入姓名和学号，最后该程序会停止当前容器。
+
+```import lxcimport sys# Setup the container objectc = lxc.Container("test5")if c.defined:    print("Container already exists", file=sys.stderr)    sys.exit(1)else:    print("success")# Create the container rootfsif not c.create(template="debian"):    print("Failed to create the container rootfs", file=sys.stderr)    sys.exit(1)else:    print("create succeed")# Start the containerif not c.start():    print("Failed to start the container", file=sys.stderr)    sys.exit(1)else:    print("start succeed")if c.attach_wait(lxc.attach_run_command, ['bash', '-c', 'echo "jindian\n1500012815" > Hello-Container']):    print("Failed to write to the container", file=sys.stderr)    sys.exit(1)else:    print("write succeed")# Stop the containerif not c.shutdown(10):    print("Failed to cleanly shutdown the container, forcing.")    if not c.stop():        print("Failed to kill the container", file=sys.stderr)        sys.exit(1)    else:        print("stop succeed")# Destroy the containerif not c.destroy():    print("Failed to destroy the container.", file=sys.stderr)    sys.exit(1)
+```
+
+* 对docker和lxc进行比较。
