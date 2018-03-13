@@ -60,4 +60,3 @@ if not c.destroy():
     sys.exit(1)
 ```
 
-* 对docker和lxc进行比较。
