@@ -99,7 +99,7 @@ struct cgroup*  cgroup_control(pid_t pid){
     }
      
     //限制只能使用0号cpu
-    if (  cgroup_add_value_string(cgc_cpuset, "cpuset.cpus", "0-1") ){
+    if (  cgroup_add_value_string(cgc_cpuset, "cpuset.cpus", "0") ){
         printf("Error limit cpuset cpus.\n");
         goto out;
     }
