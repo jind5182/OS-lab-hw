@@ -90,12 +90,12 @@
 	
 * <font size=4>lab 1在代码方面需要从哪些方面进行提高</font>
 
-	* 容器的初始进程：  
-	<img src="images/realContainer.png" width="600">   
-	在lxc容器中的top指令。  
-	<img src="images/fakeContainer.png" width="600">   
-	在fakeContainer中的top指令。  
-	通过对比可以看出，lxc容器中pid=1的初始进程为systemd，这是系统管理守护进程，传统linux系统启动过程由init进程处理，systemd引入了并行启动的概念，相比init优化了很多。fakeContainer中pid=1的初始进程为bash。  
+	* 容器的初始进程：</br> 
+	<img src="images/realContainer.png" width="600"></br>
+	在lxc容器中的top指令。</br>
+	<img src="images/fakeContainer.png" width="600"></br>
+	在fakeContainer中的top指令。</br>
+	通过对比可以看出，lxc容器中pid=1的初始进程为systemd，这是系统管理守护进程，传统linux系统启动过程由init进程处理，systemd引入了并行启动的概念，相比init优化了很多。fakeContainer中pid=1的初始进程为bash。 
 	另外，还可以看出，真正的容器在用户没有进行操作是就已经有了一些进程。fakeContainer内只有pid=1的bash进程。  
 	所以，fakeContainer需要在启动过程上进行修改。引入启动进程，并创建真正的容器需要的一系列进程。
 
@@ -105,8 +105,8 @@
 	这些都是fakeContainer缺少的，需要提高的。
 
 	* 资源隔离：  
-	fakeContainer通过添加cgroup子系统，为容器设置资源上限。通过创建新的namespace，实现资源的隔离。但是相比lxc，对资源的隔离是不够的。比如，下图是在host中执行top指令：  
-	<img src="images/hosttop.png" width="600">  
+	fakeContainer通过添加cgroup子系统，为容器设置资源上限。通过创建新的namespace，实现资源的隔离。但是相比lxc，对资源的隔离是不够的。比如，下图是在host中执行top指令：</br>
+	<img src="images/hosttop.png" width="600"></br>
 	可以发现，在host中Mem和Swap的情况和fakeContainer中是几乎一样，和lxc中有很大的区别，这说明lxc容器真正实现了资源隔离，但fakeContainer的资源隔离还不够。
 
 	* 网络栈：  
