@@ -105,6 +105,7 @@ struct cgroup*  cgroup_control(pid_t pid){
     }
 
     // TODO:添加cgroup memory子系统，设置内存上限为512MB
+    struct cgroup_controller *cgc_memory = cgroup_add_controller(cgroup, "memory");
     if (  !cgc_memory ){
         ret = ECGINVAL;
         printf("Error add controller %s\n", cgroup_strerror(ret));
