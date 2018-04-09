@@ -3,21 +3,22 @@
 * <font size=4>叙述Linux网络包处理流程</font>
 
 <img src="images/package-traversal-1.png">   
+
 **基本概念：**  
 netfilter有表和链两个维度，iptables包含4个表、5个链：
 	
 4个表:filter,nat,mangle,raw，默认表是filter（没有指定表的时候就是filter表）。表的处理优先级：raw>mangle>nat>filter。  
-**filter：**一般的过滤功能  
-**nat：**用于nat功能（端口映射，地址映射等）  
-**mangle：**用于对特定数据包的修改  
-**raw：**有限级最高，设置raw时一般是为了不再让iptables做数据包的链接跟踪处理，提高性能  
+**filter：** 一般的过滤功能  
+**nat：** 用于nat功能（端口映射，地址映射等）  
+**mangle：** 用于对特定数据包的修改  
+**raw：** 有限级最高，设置raw时一般是为了不再让iptables做数据包的链接跟踪处理，提高性能  
 	
 5个链：PREROUTING,INPUT,FORWARD,OUTPUT,POSTROUTING。  
-**PREROUTING：**数据包进入路由表之前  
-**INPUT：**通过路由表后目的地为本机  
-**FORWARDING：**通过路由表后，目的地不为本机  
-**OUTPUT：**由本机产生，向外转发  
-**POSTROUTIONG：**发送到网卡接口之前  
+**PREROUTING：** 数据包进入路由表之前  
+**INPUT：** 通过路由表后目的地为本机  
+**FORWARDING：** 通过路由表后，目的地不为本机  
+**OUTPUT：** 由本机产生，向外转发  
+**POSTROUTIONG：** 发送到网卡接口之前  
 
 每个链中有若干规则，netfilter会依次按顺序将网络包与规则进行匹配，匹配成功后就按照该条规则处理网络包。若所有规则都没有匹配成功，则按照默认策略处理网络包。
 
