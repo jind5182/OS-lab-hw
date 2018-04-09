@@ -30,9 +30,9 @@ netfilter有表和链两个维度，iptables包含4个表、5个链：
 5. 流程3和流程4最后还要经由POSTROUTING链将网络包发送出去。
 
 归纳起来：  
-**接收：**PREROUTING -> INPUT  
-**发送：**OUTPUT -> POSTROUTING  
-**转发：**PREROUTING -> FORWARD -> POSTROUTING  
+**接收：** PREROUTING -> INPUT  
+**发送：** OUTPUT -> POSTROUTING  
+**转发：** PREROUTING -> FORWARD -> POSTROUTING  
 
 ***
 
