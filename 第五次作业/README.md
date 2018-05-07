@@ -30,7 +30,7 @@
 	**GlusterFS：**
 	
 	GlusterFS是Scale-Out存储解决方案Gluster的核心，它是一个开源的分布式文件系统，具有强大的横向扩展能力，通过扩展能够支持数PB存储容量和处理数千客户端。GlusterFS借助TCP/IP或InfiniBandRDMA网络将物理分布的存储资源聚集在一起，使用单一全局命名空间来管理数据。  
-	Glusterfs是一个无中心的文件系统，不用考虑单点故障。
+	Glusterfs是一个无中心的文件系统，不用考虑单点故障。通过弹性Hash来获得Storage node。
 	
 	**特点：**  
 	* 扩展性和高性能  
@@ -65,7 +65,52 @@
 
 * **安装配置GlusterFS，启动容错机制，将配置好的分布式文件系统挂在到LXC容器里**
 
+	安装glusterfs：
 	
+	```
+	sudo apt-get install glusterfs-server
+	sudo apt-get install glusterfs-client
+	```
+	
+	配置glusterfs：
+	
+	```
+	sudo gluster peer probe 162.105.175.74
+	sudo gluster volume create rv replica 2 162.105.175.73:/home/pkusei/gfstest 162.105.175.74:/home/pkusei/gfstest force
+	sudo gluster volume start rv
+	```
+	
+	通过下面的指令查看卷的信息如下：  
+	
+	```
+	sudo gluster volume info
+	```
+	
+	<img src="images/info.png" width="400">
+	
+	然后让一台宿主机作为client进行测试（这里本来打算直接让容器作为client，但是出现了些错误：cannot open /dev/fuse (No such file or directory)）：
+	
+	```
+	sudo mount.glusterfs 162.105.175.73:rv /home/pkusei/client
+	```
+	
+	结果如下：  
+	<img src="images/same.png" width="350">  
+	是相同的，同时另一台宿主机上的gfstest文件夹中内容也相同。因为使用了复制卷，其中一台机器挂掉了，glusterfs也能够正常工作。
+	
+	将该分布式文件系统挂载到容器中，修改容器的配置文件config：
+	
+	```
+	lxc.mount.entry = /home/pkusei/client /home/gfstest none bind,rw,create=dir 0 0
+	```
+	
+	实验结果如下：  
+	<img src="images/inner.png" width="350">  
+	容器里面出现了该文件夹，在该文件下里新建文件。  
+	<img src="images/outer.png" width="400">  
+	宿主机上的文件夹里也出现了相同文件。
+	
+	实验结果符合预期。
 
 * **使用联合文件系统来为LXC提供镜像服务**
 
