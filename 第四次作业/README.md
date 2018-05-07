@@ -12,12 +12,12 @@
 	
 	经过修改config文件，两个容器的ip变成了如下：  
 	<img src="images/ip.png" width="400">  
-	实验结果如下：  
+	正常情况下这个过程是：容器1（172.16.1.10）现将数据包发给它的网关（172.16.1.1），该网关再将数据包发往容器2所在的网关（172.16.2.1），最后在发往容器2（172.16.2.10）。  
+	
+	如果加了tag，实验结果如下：  
 	<img src="images/difflan1.png" width="400">  
 	<img src="images/difflan2.png" width="600">  
 	两个容器之间不能够通信。  
-	上述结果是由于两个容器设置了不同tag。  
-	正常情况下这个过程应该是：容器1（172.16.1.10）现将数据包发给它的网关（172.16.1.1），该网关再将数据包发往容器2所在的网关（172.16.2.1），最后在发往容器2（172.16.2.10）。
 	
 	**3）通过gre隧道相连的两个host上同一子网内的两容器**
 	
@@ -77,7 +77,7 @@
 	<img src="images/container1.png" width="300">
 	<img src="images/container2.png" width="320">  
 	
-	将网卡挂载到网桥上：
+	将网卡挂载到网桥上：（要么就要给br0加上IP，不然没法里外ping通，应该也可以直接给veth加上IP）
 	
 	```
 	sudo ovs-vsctl add-port br0 port1 -- set interface port1 type=internal
@@ -115,6 +115,7 @@
 	sudo ip link set br0 up
 	sudo ovs-vsctl add-port br0 port3 -- set interface port3 type=internal
 	sudo ip addr add 172.16.1.1/24 dev port3
+	sudo ip link set port3 up
 	sudo ovs-vsctl set port port3 tag=11
 	sudo ovs-vsctl add-port br0 gre0 -- set interface gre0 type=gre option:remote_ip=162.105.175.73
 	```
@@ -146,6 +147,22 @@
 	sudo ovs-vsctl set interface port1 ingress_policing_burst=100
 	```
 	
-	利用iperf命令进行测试。  
+	利用iperf命令进行测试。在测试时发现如果某个端口添加了tag后就不能ping通其他ip，如容器（172.16.1.10）加了tag=11后就不能ping通宿主机（162.105.175.73）。所以在测试时，将port1的tag去掉了。    
+	在宿主机上：
+	
+	```
+	iperf3 -s
+	```
+	
+	在容器内：  
+	
+	```
+	iperf -c 162.105.175.73  -d -t 30
+	```
 	
 	测试结果如下：  
+	<img src="images/bandwidth1.png" width="500">  
+	初始状态。  
+	<img src="images/bandwidth2.png" width="500">  
+	加了流量控制后。  
+	可以明显看到流量受到了限制。
