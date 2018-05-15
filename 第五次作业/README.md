@@ -2,6 +2,17 @@
 
 * **模拟Raft协议工作的一个场景并叙述处理过程**
 
+	**etcd**使用了Raft算法。  
+	etcd是 A highly-available key value store for shared configuration and service discovery，即用于配置共享和服务发现的K-V存储仓库。它的特点有：  
+	简单：基于HTTP+JSON的API让你用curl就可以轻松使用。  
+	安全：可选SSL客户认证机制。  
+	快速：每个实例每秒支持一千次写操作。(比Redis性能差很多)  
+	可信：使用Raft算法充分实现了分布式。  
+	可以看到，etcd中使用了raft算法来保证了数据一致性。  
+	一个etcd节点的核心部分由三部分组成：raft（raft状态机）、wal（raft日志存储）、storage（数据的存储与索引）。  
+	etcd 集群的工作原理基于 raft 共识算法。优点在于可以在高效的解决分布式系统中各个节点日志内容一致性问题的同时，也使得集群具备一定的容错能力。即使集群中出现部分节点故障、网络故障等问题，仍可保证其余大多数节点正确的步进。甚至当更多的节点（一般来说超过集群节点总数的一半）出现故障而导致集群不可用时，依然可以保证节点中的数据不会出现错误的结果。  
+	另外，etcd还提供了raft库可供使用。
+	
 	下面的网页很好的模拟了Raft协议的工作场景：  
 	[http://thesecretlivesofdata.com/raft/](http://thesecretlivesofdata.com/raft/)
 	
